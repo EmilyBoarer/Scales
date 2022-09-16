@@ -14,9 +14,6 @@
 int main() {
     // init serial connection
     stdio_init_all();
-
-    sleep_ms(2000);
-    printf("\nHello World!\n");
     
     // init display --------------------------------------------------------------
 
@@ -32,7 +29,7 @@ int main() {
     ssd1306_clear(&disp);
 
     // TEMP just show something to show it works
-    ssd1306_draw_string(&disp, 8, 24, 2, "Hello, World!");
+    ssd1306_draw_string(&disp, 0, 0, 1, "Booting...");
     ssd1306_show(&disp);
 
     // init HX711 ----------------------------------------------------------------
@@ -147,9 +144,24 @@ int main() {
             mass_get_value(&mass, &val);
 
             // convert the mass to a string
-            char buff[MASS_TO_STRING_BUFF_SIZE];
-            mass_to_string(&mass, buff);
-            printf("%s\n", buff);
+            // char buff[MASS_TO_STRING_BUFF_SIZE];
+            // mass_to_string(&mass, buff);
+            // printf("%s\n", buff);
+
+            // display measurement on screen
+
+            char dsptxtbuf[20];
+            snprintf(
+                dsptxtbuf,
+                6,
+                "%d",
+                (int) val);
+
+
+            ssd1306_clear(&disp);
+            ssd1306_draw_string(&disp, 0, 0, 4, dsptxtbuf);
+            ssd1306_draw_string(&disp, 50, 32, 2, "grams");
+            ssd1306_show(&disp);
 
             // or do other operations (see: mass.h file)
 
@@ -158,7 +170,7 @@ int main() {
             printf("Failed to read weight\n");
         }
 
-        sleep_ms(500); // read again in half a second
+        sleep_ms(100); // read again in half a second
     }
 
 }
