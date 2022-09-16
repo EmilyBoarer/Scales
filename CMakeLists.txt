@@ -16,5 +16,5 @@ pico_enable_stdio_uart(scales 1)
 
 pico_add_extra_outputs(scales)
 
-add_subdirectory(extern/hx711-pico-c)
-target_link_libraries(scales pico_stdlib hardware_gpio hardware_pio hx711-pico-c)
+add_subdirectory(extern/pico-scale)
+target_link_libraries(scales pico_stdlib hardware_gpio hardware_pio pico-scale)
