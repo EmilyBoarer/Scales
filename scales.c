@@ -20,7 +20,7 @@ int main() {
     
     // init display --------------------------------------------------------------
 
-    i2c_init(i2c1, 400000);
+    i2c_init(i2c0, 400000);
     gpio_set_function(20, GPIO_FUNC_I2C);
     gpio_set_function(21, GPIO_FUNC_I2C);
     gpio_pull_up(20);
@@ -28,7 +28,7 @@ int main() {
 
     ssd1306_t disp;
     disp.external_vcc=false;
-    ssd1306_init(&disp, 128, 64, 0x3C, i2c1);
+    ssd1306_init(&disp, 128, 64, 0x3C, i2c0);
     ssd1306_clear(&disp);
 
     // TEMP just show something to show it works
