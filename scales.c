@@ -198,6 +198,7 @@ int main() {
             sleep_ms(200);
             // zero the scales
             double val;
+            scale_weight(&sc, &mass, &opt);
             mass_get_value(&mass, &val);
             ZERO = (int) val;
         } else {
