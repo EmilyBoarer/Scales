@@ -7,6 +7,8 @@
 #include "extern/pico-scale/include/scale.h"
 #include "extern/pico-scale/extern/hx711-pico-c/include/hx711_noblock.pio.h"
 
+// from https://github.com/daschr/pico-ssd1306 (owner doesn't have a proper way to add project, instructs to just copy files in manually)
+
 int main() {
     // init serial connection
     stdio_init_all();
