@@ -17,4 +17,5 @@ pico_enable_stdio_uart(scales 1)
 pico_add_extra_outputs(scales)
 
 add_subdirectory(extern/pico-scale)
-target_link_libraries(scales pico_stdlib hardware_gpio hardware_pio pico-scale)
+add_subdirectory(extern/pico-ssd1306)
+target_link_libraries(scales pico_stdlib hardware_gpio hardware_pio hardware_i2c pico-scale pico-ssd1306)

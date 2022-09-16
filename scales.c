@@ -2,12 +2,14 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "hardware/pio.h"
+#include "hardware/i2c.h"
 
 // from https://github.com/endail/pico-scale hx711-pico-c
 #include "extern/pico-scale/include/scale.h"
 #include "extern/pico-scale/extern/hx711-pico-c/include/hx711_noblock.pio.h"
 
 // from https://github.com/daschr/pico-ssd1306 (owner doesn't have a proper way to add project, instructs to just copy files in manually)
+#include "extern/pico-ssd1306/src/ssd1306.h"
 
 int main() {
     // init serial connection
@@ -16,49 +18,66 @@ int main() {
     sleep_ms(2000);
     printf("\nHello World!\n");
     
+    // init display --------------------------------------------------------------
+
+    i2c_init(i2c1, 400000);
+    gpio_set_function(20, GPIO_FUNC_I2C);
+    gpio_set_function(21, GPIO_FUNC_I2C);
+    gpio_pull_up(20);
+    gpio_pull_up(21);
+
+    ssd1306_t disp;
+    disp.external_vcc=false;
+    ssd1306_init(&disp, 128, 64, 0x3C, i2c1);
+    ssd1306_clear(&disp);
+
+    // TEMP just show something to show it works
+    ssd1306_draw_string(&disp, 8, 24, 2, "Hello, World!");
+    ssd1306_show(&disp);
+
     // init HX711 ----------------------------------------------------------------
 
     hx711_t hx;
 
-    // 1. Initialise the HX711
-    hx711_init(
-        &hx,
-        27, // Pico GPIO pin connected to HX711's clock pin
-        26, // Pico GPIO pin connected to HX711's data pin
-        pio0, // the RP2040 PIO to use (either pio0 or pio1)
-        &hx711_noblock_program, // the state machine program
-        &hx711_noblock_program_init); // the state machine program init function
+    { // 1. Initialise the HX711
+        hx711_init(
+            &hx,
+            27, // Pico GPIO pin connected to HX711's clock pin
+            26, // Pico GPIO pin connected to HX711's data pin
+            pio0, // the RP2040 PIO to use (either pio0 or pio1)
+            &hx711_noblock_program, // the state machine program
+            &hx711_noblock_program_init); // the state machine program init function
 
-    // 2. Power up
-    hx711_set_power(&hx, hx711_pwr_up);
+        // 2. Power up
+        hx711_set_power(&hx, hx711_pwr_up);
 
-    // 3. [OPTIONAL] set gain and save it to the HX711
-    // chip by powering down then back up
-    hx711_set_gain(&hx, hx711_gain_128);
-    hx711_set_power(&hx, hx711_pwr_down);
-    hx711_wait_power_down();
-    hx711_set_power(&hx, hx711_pwr_up);
+        // 3. [OPTIONAL] set gain and save it to the HX711
+        // chip by powering down then back up
+        hx711_set_gain(&hx, hx711_gain_128);
+        hx711_set_power(&hx, hx711_pwr_down);
+        hx711_wait_power_down();
+        hx711_set_power(&hx, hx711_pwr_up);
 
-    // 4. Wait for readings to settle
-    hx711_wait_settle(hx711_rate_10); // or hx711_rate_80 depending on your chip's config
+        // 4. Wait for readings to settle
+        hx711_wait_settle(hx711_rate_10); // or hx711_rate_80 depending on your chip's config
 
-    // 5. Read values
-    int32_t val;
+        // 5. Read values
+        int32_t val;
 
-    // wait (block) until a value is read
-    val = hx711_get_value(&hx);
+        // wait (block) until a value is read
+        val = hx711_get_value(&hx);
 
-    // or use a timeout
-    if(hx711_get_value_timeout(&hx, 250000, &val)) {
-        // value was obtained within the timeout period
-        // in this case, within 250 milliseconds
-        printf("%li\n", val);
+        // or use a timeout
+        if(hx711_get_value_timeout(&hx, 250000, &val)) {
+            // value was obtained within the timeout period
+            // in this case, within 250 milliseconds
+            printf("%li\n", val);
+        }
     }
-
     // init scales --------------------------------------------------------------
     
     scale_t sc;
-
+ 
     // the values obtained when calibrating the scale
     // if you don't know them, read the following section How to Calibrate
     mass_unit_t scaleUnit = mass_g;
