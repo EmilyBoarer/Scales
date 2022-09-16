@@ -62,7 +62,7 @@ int main() {
 
         // 3. [OPTIONAL] set gain and save it to the HX711
         // chip by powering down then back up
-        hx711_set_gain(&hx, hx711_gain_128);
+        hx711_set_gain(&hx, hx711_gain_64);
         hx711_set_power(&hx, hx711_pwr_down);
         hx711_wait_power_down();
         hx711_set_power(&hx, hx711_pwr_up);
@@ -192,6 +192,7 @@ int main() {
             ssd1306_draw_string(&disp, 0, 0, 4, "...");
             ssd1306_show(&disp);
             sleep_ms(1500);
+            ssd1306_clear(&disp);
             ssd1306_draw_string(&disp, 0, 0, 4, "ZERO");
             ssd1306_show(&disp);
             sleep_ms(200);
