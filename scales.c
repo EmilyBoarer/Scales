@@ -112,27 +112,32 @@ int main() {
     // 5. Obtain the weight
     mass_t mass;
 
-    if(scale_weight(&sc, &mass, &opt)) {
+    while (1) {
+        if(scale_weight(&sc, &mass, &opt)) {
 
-        // mass will contain the weight on the scale obtanined and interpreted
-        // according to the given options and be in the unit defined by the
-        // mass_unit_t 'scaleUnit' variable above
-        //
-        // you can now:
+            // mass will contain the weight on the scale obtanined and interpreted
+            // according to the given options and be in the unit defined by the
+            // mass_unit_t 'scaleUnit' variable above
+            //
+            // you can now:
 
-        // get the weight as a numeric value according to the mass_unit_t
-        double val;
-        mass_get_value(&mass, &val);
+            // get the weight as a numeric value according to the mass_unit_t
+            double val;
+            mass_get_value(&mass, &val);
 
-        // convert the mass to a string
-        char buff[MASS_TO_STRING_BUFF_SIZE];
-        mass_to_string(&mass, buff);
-        printf("%s\n", buff);
+            // convert the mass to a string
+            char buff[MASS_TO_STRING_BUFF_SIZE];
+            mass_to_string(&mass, buff);
+            printf("%s\n", buff);
 
-        // or do other operations (see: mass.h file)
+            // or do other operations (see: mass.h file)
 
+        }
+        else {
+            printf("Failed to read weight\n");
+        }
+
+        sleep_ms(500); // read again in half a second
     }
-    else {
-        printf("Failed to read weight\n");
-    }
+
 }
