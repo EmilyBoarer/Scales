@@ -189,18 +189,32 @@ int main() {
         if (!gpio_get(ZERO_BUTTON)) {
             // Show blank
             ssd1306_clear(&disp);
-            ssd1306_draw_string(&disp, 0, 0, 4, "...");
+            ssd1306_draw_string(&disp, 0, 0, 2, "Release");
+            ssd1306_draw_string(&disp, 0, 20, 2, "to zero");
             ssd1306_show(&disp);
-            sleep_ms(1500);
+            // wait until realeased
+            while (!gpio_get(ZERO_BUTTON)) {
+                sleep_ms(1);
+            }
             ssd1306_clear(&disp);
-            ssd1306_draw_string(&disp, 0, 0, 4, "ZERO");
+            ssd1306_draw_string(&disp, 0, 0, 4, "WAIT");
             ssd1306_show(&disp);
-            sleep_ms(200);
+            sleep_ms(1000);
+
+            ssd1306_clear(&disp);
+            ssd1306_draw_string(&disp, 0, 0, 4, "WAIT");
+            ssd1306_draw_string(&disp, 0, 32, 2, "zeroing");
+            ssd1306_show(&disp);
             // zero the scales
-            double val;
-            scale_weight(&sc, &mass, &opt);
-            mass_get_value(&mass, &val);
-            ZERO = (int) val;
+            double avrg = 0;
+            for (int i = 0; i < 10; i++) {
+                double val;
+                scale_weight(&sc, &mass, &opt);
+                mass_get_value(&mass, &val);
+                avrg += val;
+                sleep_ms(100);
+            }
+            ZERO = (int) (avrg/10);
         } else {
             sleep_ms(100); // read again in half a second
         }
