@@ -142,6 +142,9 @@ int main() {
     // 5. Obtain the weight
     mass_t mass;
 
+    // remember zero mark (integrated zeroing function doesn't work)
+    int ZERO = 0;
+
     while (1) {
         if(scale_weight(&sc, &mass, &opt)) {
 
@@ -167,7 +170,7 @@ int main() {
                 dsptxtbuf,
                 6,
                 "%d",
-                (int) val);
+                ((int) val)-ZERO);
 
 
             ssd1306_clear(&disp);
@@ -193,8 +196,9 @@ int main() {
             ssd1306_show(&disp);
             sleep_ms(200);
             // zero the scales
-            hx711_wait_settle(hx711_rate_10); // or hx711_rate_80 depending on your chip's config
-            scale_zero(&sc, &opt);
+            double val;
+            mass_get_value(&mass, &val);
+            ZERO = (int) val;
         } else {
             sleep_ms(100); // read again in half a second
         }
