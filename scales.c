@@ -26,10 +26,10 @@ int main() {
     ssd1306_t disp;
     disp.external_vcc=false;
     ssd1306_init(&disp, 128, 64, 0x3C, i2c0);
-    ssd1306_clear(&disp);
 
-    // TEMP just show something to show it works
-    ssd1306_draw_string(&disp, 0, 0, 1, "Booting...");
+    // do boot screen
+    ssd1306_clear(&disp);
+    ssd1306_draw_string(&disp, 0, 0, 1, "Initialising ...");
     ssd1306_show(&disp);
 
     // init HX711 ----------------------------------------------------------------
