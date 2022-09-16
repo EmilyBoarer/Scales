@@ -12,7 +12,7 @@ int main() {
     stdio_init_all();
 
     sleep_ms(2000);
-    printf("Hello World!\n");
+    printf("\nHello World!\n");
     
     // init HX711 ----------------------------------------------------------------
 
@@ -60,8 +60,8 @@ int main() {
     // the values obtained when calibrating the scale
     // if you don't know them, read the following section How to Calibrate
     mass_unit_t scaleUnit = mass_g;
-    int32_t refUnit = -432;
-    int32_t offset = -367539;
+    int32_t refUnit = -247;
+    int32_t offset = -353047;
 
     scale_init(
         &sc,
