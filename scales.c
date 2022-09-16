@@ -11,6 +11,9 @@
 // from https://github.com/daschr/pico-ssd1306 (owner doesn't have a proper way to add project, instructs to just copy files in manually)
 #include "extern/pico-ssd1306/src/ssd1306.h"
 
+#define ZERO_BUTTON 14
+#define UNIT_BUTTON 15
+
 int main() {
     // init serial connection
     stdio_init_all();
@@ -31,6 +34,15 @@ int main() {
     ssd1306_clear(&disp);
     ssd1306_draw_string(&disp, 0, 0, 1, "Initialising ...");
     ssd1306_show(&disp);
+
+    // init buttons --------------------------------------------------------------
+    gpio_init(ZERO_BUTTON);
+    gpio_set_dir(ZERO_BUTTON, GPIO_IN);
+    gpio_pull_up(ZERO_BUTTON);
+
+    gpio_init(UNIT_BUTTON);
+    gpio_set_dir(UNIT_BUTTON, GPIO_IN);
+    gpio_pull_up(UNIT_BUTTON);
 
     // init HX711 ----------------------------------------------------------------
 
@@ -79,7 +91,7 @@ int main() {
     // if you don't know them, read the following section How to Calibrate
     mass_unit_t scaleUnit = mass_g;
     int32_t refUnit = -247;
-    int32_t offset = -353047;
+    int32_t offset = -358883;
 
     scale_init(
         &sc,
@@ -170,7 +182,22 @@ int main() {
             printf("Failed to read weight\n");
         }
 
-        sleep_ms(100); // read again in half a second
+        // check for button presses
+        if (!gpio_get(ZERO_BUTTON)) {
+            // Show blank
+            ssd1306_clear(&disp);
+            ssd1306_draw_string(&disp, 0, 0, 4, "...");
+            ssd1306_show(&disp);
+            sleep_ms(1500);
+            ssd1306_draw_string(&disp, 0, 0, 4, "ZERO");
+            ssd1306_show(&disp);
+            sleep_ms(200);
+            // zero the scales
+            hx711_wait_settle(hx711_rate_10); // or hx711_rate_80 depending on your chip's config
+            scale_zero(&sc, &opt);
+        } else {
+            sleep_ms(100); // read again in half a second
+        }
     }
 
 }
