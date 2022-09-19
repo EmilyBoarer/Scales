@@ -215,7 +215,7 @@ int main() {
             }
             ZERO = (avrg/30);
         } else {
-            sleep_ms(100); // read again in half a second
+            sleep_ms(10); // read again in half a second
         }
     }
 
